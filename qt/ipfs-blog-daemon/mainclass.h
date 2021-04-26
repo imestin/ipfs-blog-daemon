@@ -53,7 +53,7 @@ class MainClass : public QDialog {
 		void mainSiteDone();
 		void dbDone();
 		void articlesDone();
-		// error?
+
 
 	protected:
 		void closeEvent(QCloseEvent * event) Q_DECL_OVERRIDE;
@@ -66,6 +66,7 @@ class MainClass : public QDialog {
 		void messageClicked();
 		void updateInterface();
         void errorWhilePinning();						// Maybe this should be public or all should be private
+        void setInterval();
 
 	private:
 		void createPinningTimesGroupBox();
@@ -73,6 +74,8 @@ class MainClass : public QDialog {
 		void createMessagesGroupBox();
 		void createActions();
 		void createTrayIcon();
+        void createTimer();
+        void updateRefreshTime();
         void workerConnections(bool first);
 
 		// GroupBox-1
@@ -90,6 +93,7 @@ class MainClass : public QDialog {
 		QGroupBox *interactGroupBox;
 		QLabel *changeIntervalLabel;
 		QSpinBox *changeIntervalSpinBox;
+        QPushButton *setIntervalButton;
 		QLabel *refreshLabel;
 		QPushButton *refreshButton;
 
@@ -104,10 +108,9 @@ class MainClass : public QDialog {
 
 		QSystemTrayIcon *trayIcon;
 		QMenu *trayIconMenu;
-
-		// last updated might not need to be a variable, Label is enough
-		// bool might not be necesarry
 		
+        int intervalMinutes = 15;
+
 		QTimer *timer;									// Timer for scheduling the updates
 		QThread *thread;								// The thread where the IPFS operations will run
 		Worker *worker;									// The worker for the second thread

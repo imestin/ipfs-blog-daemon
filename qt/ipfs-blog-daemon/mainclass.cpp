@@ -34,16 +34,12 @@ MainClass::MainClass() {
     mainLayout->addWidget(messagesGroupBox);
     setLayout(mainLayout);
 
-    // We need to change this so there is no switching in icon
-    //iconComboBox->setCurrentIndex(1);
     trayIcon->show();
-
     setWindowTitle(tr("IPFS Blog Daemon"));
     resize(600, 600);
 
     // Create the timer
-    timer = new QTimer(this);
-    timer->start(/*15*60**/1000);
+    createTimer();
 
     // Create the first worker & thread. Later it will be created by the reCreateWorker function
     thread = new QThread;
@@ -52,6 +48,8 @@ MainClass::MainClass() {
     thread->start();
 
     workerConnections(true);
+    // Connect the buttons
+    connect(setIntervalButton, SIGNAL(clicked()), window(), SLOT(setInterval()));
 }
 
 /*MainClass::~MainClass() {
@@ -73,7 +71,7 @@ void MainClass::closeEvent(QCloseEvent *event) {
 	#endif
 
     if (trayIcon->isVisible()) {
-    	QMessageBox::information(this, tr("Systray"), tr("Keep running warning"));
+        QMessageBox::information(this, tr("Systray"), tr("The application will keep running in the background. Right click on the icon to quit."));
     	hide();
     	event->ignore();
     }
@@ -99,7 +97,7 @@ void MainClass::createPinningTimesGroupBox() {
 	articlesLastLabel = new QLabel(tr("Articles last pinned"));
     articlesLastTime = new QLabel(tr("not pinned yet"));
 	nextRefreshLabel = new QLabel(tr("Next refresh"));
-    nextRefreshTime = new QLabel(tr("not set"));
+    nextRefreshTime = new QLabel(tr("running..."));
 
     QGridLayout *timesLayout = new QGridLayout;
     timesLayout->addWidget(websiteLastLabel, 0, 0);
@@ -119,15 +117,17 @@ void MainClass::createInteractGroupBox() {
 	changeIntervalSpinBox = new QSpinBox();
     changeIntervalSpinBox->setRange(10, 3000);
     changeIntervalSpinBox->setSuffix(" m");
-    changeIntervalSpinBox->setValue(10);
+    changeIntervalSpinBox->setValue(intervalMinutes);
+    setIntervalButton = new QPushButton(tr("Set"));
     refreshLabel = new QLabel(tr("Do a refresh now"));
     refreshButton = new QPushButton(tr("Refresh now"));
 
     QGridLayout *interactLayout = new QGridLayout;
     interactLayout->addWidget(changeIntervalLabel, 0, 0);
     interactLayout->addWidget(changeIntervalSpinBox, 0, 1);
+    interactLayout->addWidget(setIntervalButton, 0, 2);
     interactLayout->addWidget(refreshLabel, 1, 0);
-    interactLayout->addWidget(refreshButton, 1, 1);
+    interactLayout->addWidget(refreshButton, 1, 1, 1, 2);
     interactGroupBox->setLayout(interactLayout);
 }
 
@@ -166,6 +166,23 @@ void MainClass::createTrayIcon() {
 	trayIcon->setContextMenu(trayIconMenu);
 }
 
+void MainClass::createTimer() {
+    timer = new QTimer(this);
+    timer->start(intervalMinutes*60*1000);
+}
+
+void MainClass::setInterval() {
+    qDebug() << "hi";
+    intervalMinutes = changeIntervalSpinBox->value();
+    createTimer();
+    updateRefreshTime();
+}
+
+void MainClass::updateRefreshTime() {
+    QDateTime timeObj = QDateTime::currentDateTime();
+    timeObj.setTime_t((timeObj.toMSecsSinceEpoch() + timer->remainingTime())/1000);     // Calculate next refresh time
+    nextRefreshTime->setText(timeObj.time().toString());                                // Set next refresh time label
+}
 
 // SIGNAL and SLOT connections for the worker and the main app
 void MainClass::workerConnections(bool first) {
@@ -180,6 +197,7 @@ void MainClass::workerConnections(bool first) {
     connect(worker, SIGNAL(finished()), thread, SLOT(quit()));							// End
     connect(worker, SIGNAL(finished()), window(), SLOT(reCreateWorker()));              // ..
     connect(worker, SIGNAL(error(QString)), window(), SLOT(errorWhilePinning()));		// Error
+    connect(refreshButton, SIGNAL(clicked()), worker, SLOT(process()));                 // Refresh button
 }
 
 
@@ -187,6 +205,7 @@ void MainClass::workerConnections(bool first) {
 void MainClass::updateInterface() {
 	// not yet implemented
 	// Change label
+    // obsolate
     websiteLastTime->setText("99:99");
 }
 
@@ -198,6 +217,7 @@ void MainClass::reCreateWorker() {
     thread->start();
     workerConnections(false);
 
+    updateRefreshTime();
 }
 
 void MainClass::mainSiteDone() {
@@ -223,7 +243,8 @@ void MainClass::articlesDone() {
 
 void MainClass::errorWhilePinning() {
 	qDebug() << "Error." << endl;
-    qDebug() << timer->remainingTime();
+    qDebug() << "spinBox: " << changeIntervalSpinBox->value();
+
 }
 
 /**----------IPFS Functions-----------------------------------------------------------*/
