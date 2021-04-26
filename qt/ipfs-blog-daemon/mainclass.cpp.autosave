@@ -224,6 +224,7 @@ void MainClass::articlesDone() {
 void MainClass::errorWhilePinning() {
 	qDebug() << "Error." << endl;
     qDebug() << timer->remainingTime();
+    qDebug() << timer->
 }
 
 /**----------IPFS Functions-----------------------------------------------------------*/

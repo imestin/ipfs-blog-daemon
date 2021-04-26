@@ -73,7 +73,7 @@ class MainClass : public QDialog {
 		void createMessagesGroupBox();
 		void createActions();
 		void createTrayIcon();
-		void workerConnections();
+        void workerConnections(bool first);
 
 		// GroupBox-1
 		QGroupBox *pinningTimesGroupBox;
