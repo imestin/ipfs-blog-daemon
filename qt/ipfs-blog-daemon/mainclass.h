@@ -35,6 +35,7 @@ class Worker : public QObject {
 		void mainSiteFinished();
 		void dbFinished();
 		void articlesFinished();
+        void processStarted();
         void error(QString err);
 };
 
@@ -65,8 +66,9 @@ class MainClass : public QDialog {
         //void showMessage();
 		void messageClicked();
 		void updateInterface();
-        void errorWhilePinning();						// Maybe this should be public or all should be private
+        void errorWhilePinning(QString error);						// Maybe this should be public or all should be private
         void setInterval();
+        void theProcessStarted();
 
 	private:
 		void createPinningTimesGroupBox();

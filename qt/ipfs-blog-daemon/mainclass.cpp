@@ -18,13 +18,11 @@
 
 
 MainClass::MainClass() {
-	// Create the interface
-	createPinningTimesGroupBox();
+    createPinningTimesGroupBox();                                                       // Create the interface
 	createInteractGroupBox();
 	createMessagesGroupBox();
 
-	// Create the tray icon
-	createActions();
+    createActions();                                                                    // Create the tray icon
 	createTrayIcon();
     setIcon();
 
@@ -36,20 +34,17 @@ MainClass::MainClass() {
 
     trayIcon->show();
     setWindowTitle(tr("IPFS Blog Daemon"));
-    resize(600, 600);
+    resize(600, 600);                                                                   // Set window size
 
-    // Create the timer
-    createTimer();
+    connect(setIntervalButton, SIGNAL(clicked()), window(), SLOT(setInterval()));       // Connect the set interval button
+    createTimer();                                                                      // Create the timer
 
-    // Create the first worker & thread. Later it will be created by the reCreateWorker function
-    thread = new QThread;
-    worker = new Worker();
+    thread = new QThread;                                                               // Create the first worker & thread.
+    worker = new Worker();                                                              // Later it will be created by the reCreateWorker function
     worker->moveToThread(thread);
     thread->start();
 
-    workerConnections(true);
-    // Connect the buttons
-    connect(setIntervalButton, SIGNAL(clicked()), window(), SLOT(setInterval()));
+    workerConnections(true);                                                            // connect() functions for the worker
 }
 
 /*MainClass::~MainClass() {
@@ -196,8 +191,9 @@ void MainClass::workerConnections(bool first) {
     connect(worker, SIGNAL(articlesFinished()), window(), SLOT(articlesDone()));		// ..
     connect(worker, SIGNAL(finished()), thread, SLOT(quit()));							// End
     connect(worker, SIGNAL(finished()), window(), SLOT(reCreateWorker()));              // ..
-    connect(worker, SIGNAL(error(QString)), window(), SLOT(errorWhilePinning()));		// Error
     connect(refreshButton, SIGNAL(clicked()), worker, SLOT(process()));                 // Refresh button
+    connect(worker, SIGNAL(processStarted()), window(), SLOT(theProcessStarted()));      // Message when the process started
+    connect(worker, SIGNAL(error(QString)), window(), SLOT(errorWhilePinning(QString)));		// Error
 }
 
 
@@ -209,8 +205,7 @@ void MainClass::updateInterface() {
     websiteLastTime->setText("99:99");
 }
 
-void MainClass::reCreateWorker() {
-	qDebug() << "Worker finished. Rewrite pointers to nullpointers and re-create them." << endl;
+void MainClass::reCreateWorker() {    
     thread = new QThread;
     worker = new Worker();
     worker->moveToThread(thread);
@@ -218,33 +213,40 @@ void MainClass::reCreateWorker() {
     workerConnections(false);
 
     updateRefreshTime();
+    QString currentText = messagesLabel->text();
+    currentText.append("The pinning process finished. You can click on 'Refresh now' or wait for next scheduled refresh event. \n");
+    messagesLabel->setText(currentText);
 }
 
 void MainClass::mainSiteDone() {
-	qDebug() << "Signal received from worker that pinning the main site recursively is done." << endl;
     QDateTime current = QDateTime::currentDateTime();
     QString currentTime = current.time().toString();
     websiteLastTime->setText(currentTime);
 }
 
 void MainClass::dbDone() {
-	qDebug() << "Signal received from worker that pinning the db recursively is done." << endl;
     QDateTime current = QDateTime::currentDateTime();
     QString currentTime = current.time().toString();
     dbLastTime->setText(currentTime);
 }
 
 void MainClass::articlesDone() {
-	qDebug() << "Signal received from worker that pinning the articles recursively is done." << endl;
     QDateTime current = QDateTime::currentDateTime();
     QString currentTime = current.time().toString();
     articlesLastTime->setText(currentTime);
 }
 
-void MainClass::errorWhilePinning() {
-	qDebug() << "Error." << endl;
-    qDebug() << "spinBox: " << changeIntervalSpinBox->value();
+void MainClass::theProcessStarted() {
+    messagesLabel->setText(tr("The program started pinning the files from IPFS \n"));
+}
 
+void MainClass::errorWhilePinning(QString error) {
+    QString currentText = messagesLabel->text();
+    if (error == "version") currentText.append("\nError while running `ipfs version`. Check if IPFS is installed \n\n");
+    if (error == "site") currentText.append("\nSome error occured while pinning the website frame with 'IPFS pin add -r'. \nMaybe the given IPNS name is wrong or the IPFS network is having problems finding this IPNS name. \n\n");
+    if (error == "db") currentText.append("\nSome error occured while pinning the database with 'IPFS pin add -r'. \nMaybe the given IPNS name is wrong or the IPFS network is having problems finding this IPNS name. \n\n");
+    if (error == "articles") currentText.append("\nSome error occured while pinning the articles with 'IPFS pin add -r'. \nMaybe the given IPNS name is wrong. or the IPFS network is having problems finding this IPNS name \n\n");
+    messagesLabel->setText(currentText);
 }
 
 /**----------IPFS Functions-----------------------------------------------------------*/
@@ -302,27 +304,27 @@ QByteArray Worker::ipfsPin(QString which) {
 
 void Worker::process() {
     qDebug("Hello World from Maya!");
+    emit processStarted();
     QString response;
 
     response = ipfsVersion();                                   // With this we could test if we have IPFS or not
-    if (!response.contains("ipfs version"))
-        emit error(response);
+    if (!response.contains("ipfs version")) {
+        emit error("version");
+        return;
+    }
+
 
     response = ipfsPin("site");                                 // This will pin the main site
-    if (response.contains("pinned"))
-        emit mainSiteFinished();
-    else
-        emit error(response);
+    if (response.contains("pinned")) emit mainSiteFinished();
+        else emit error("site");
+
     response = ipfsPin("db");                                   // This will pin the DB
-    if (response.contains("pinned"))
-        emit dbFinished();
-    else
-        emit error(response);
+    if (response.contains("pinned")) emit dbFinished();
+        else emit error("db");
+
     response = ipfsPin("articles");                             // This will pin the articles
-    if (response.contains("pinned"))
-        emit articlesFinished();
-    else
-        emit error(response);
+    if (response.contains("pinned")) emit articlesFinished();
+        else emit error("articles");
 
     emit finished();											// Finished without error
 
