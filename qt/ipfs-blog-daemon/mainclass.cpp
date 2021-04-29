@@ -66,7 +66,7 @@ void MainClass::closeEvent(QCloseEvent *event) {
 	#endif
 
     if (trayIcon->isVisible()) {
-        QMessageBox::information(this, tr("Systray"), tr("The application will keep running in the background. Right click on the icon to quit."));
+        QMessageBox::information(this, tr("Systray"), tr("The application will keep running in the background. Right click on the icon to open menu with 'Quit' option."));
     	hide();
     	event->ignore();
     }
@@ -108,7 +108,7 @@ void MainClass::createPinningTimesGroupBox() {
 
 void MainClass::createInteractGroupBox() {
 	interactGroupBox = new QGroupBox(tr("Interactions"));
-    changeIntervalLabel = new QLabel(tr("Change refresh interval"));
+    changeIntervalLabel = new QLabel(tr("Change refresh interval (will not save)"));
 	changeIntervalSpinBox = new QSpinBox();
     changeIntervalSpinBox->setRange(10, 3000);
     changeIntervalSpinBox->setSuffix(" m");
@@ -192,8 +192,8 @@ void MainClass::workerConnections(bool first) {
     connect(worker, SIGNAL(finished()), thread, SLOT(quit()));							// End
     connect(worker, SIGNAL(finished()), window(), SLOT(reCreateWorker()));              // ..
     connect(refreshButton, SIGNAL(clicked()), worker, SLOT(process()));                 // Refresh button
-    connect(worker, SIGNAL(processStarted()), window(), SLOT(theProcessStarted()));      // Message when the process started
-    connect(worker, SIGNAL(error(QString)), window(), SLOT(errorWhilePinning(QString)));		// Error
+    connect(worker, SIGNAL(processStarted()), window(), SLOT(theProcessStarted()));     // Message when the process started
+    connect(worker, SIGNAL(error(QString)), window(), SLOT(errorWhilePinning(QString)));// Error
 }
 
 
@@ -214,7 +214,7 @@ void MainClass::reCreateWorker() {
 
     updateRefreshTime();
     QString currentText = messagesLabel->text();
-    currentText.append("The pinning process finished. You can click on 'Refresh now' or wait for next scheduled refresh event. \n");
+    currentText.append("The pinning process finished. \nYou can click on 'Refresh now' or wait for next scheduled refresh event. \n");
     messagesLabel->setText(currentText);
 }
 

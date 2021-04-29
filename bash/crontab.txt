@@ -1,0 +1,3 @@
+*/29 * * * * /root/update_killer.sh
+*/15 * * * * /root/ipfs_pin_updater.sh
+

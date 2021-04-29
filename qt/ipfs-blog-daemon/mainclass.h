@@ -111,7 +111,7 @@ class MainClass : public QDialog {
 		QSystemTrayIcon *trayIcon;
 		QMenu *trayIconMenu;
 		
-        int intervalMinutes = 15;
+        int intervalMinutes = 120;
 
 		QTimer *timer;									// Timer for scheduling the updates
 		QThread *thread;								// The thread where the IPFS operations will run
