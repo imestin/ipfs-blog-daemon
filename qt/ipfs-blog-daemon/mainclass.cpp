@@ -71,7 +71,7 @@ void MainClass::closeEvent(QCloseEvent *event) {
 
 void MainClass::setIcon()
 {
-    QIcon icon = QIcon(":/images/heart.png");
+    QIcon icon = QIcon(":/images/network1.png");
     trayIcon->setIcon(icon);
     setWindowIcon(icon);
 }

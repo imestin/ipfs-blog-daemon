@@ -309,7 +309,9 @@ qrc_daemon.cpp: ../ipfs-blog-daemon/daemon.qrc \
 		/usr/lib/x86_64-linux-gnu/qt5/bin/rcc \
 		../ipfs-blog-daemon/images/heart.png \
 		../ipfs-blog-daemon/images/bad.png \
-		../ipfs-blog-daemon/images/trash.png
+		../ipfs-blog-daemon/images/network2.jpg \
+		../ipfs-blog-daemon/images/trash.png \
+		../ipfs-blog-daemon/images/network1.png
 	/usr/lib/x86_64-linux-gnu/qt5/bin/rcc -name daemon ../ipfs-blog-daemon/daemon.qrc -o qrc_daemon.cpp
 
 compiler_moc_header_make_all: moc_classes.cpp

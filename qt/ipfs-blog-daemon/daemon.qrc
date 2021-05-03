@@ -3,5 +3,7 @@
         <file>images/bad.png</file>
         <file>images/heart.png</file>
         <file>images/trash.png</file>
+        <file>images/network1.png</file>
+        <file>images/network2.jpg</file>
     </qresource>
 </RCC>
