@@ -1,5 +1,5 @@
-#ifndef MAINCLASS_H
-#define MAINCLASS_H
+#ifndef CLASSES_H
+#define CLASSES_H
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
@@ -17,7 +17,7 @@ QT_END_NAMESPACE
 
 
 
-
+// The worker thread
 class Worker : public QObject {
 	Q_OBJECT
 
@@ -65,7 +65,6 @@ class MainClass : public QDialog {
         //void iconActivated(QSystemTrayIcon::ActivationReason reason);
         //void showMessage();
 		void messageClicked();
-		void updateInterface();
         void errorWhilePinning(QString error);						// Maybe this should be public or all should be private
         void setInterval();
         void theProcessStarted();
@@ -119,4 +118,4 @@ class MainClass : public QDialog {
 
 };
 
-#endif // MAINCLASS_H
+#endif // CLASSES_H

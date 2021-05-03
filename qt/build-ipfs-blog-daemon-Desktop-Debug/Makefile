@@ -50,11 +50,11 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../ipfs-blog-daemon/main.cpp \
 		../ipfs-blog-daemon/mainclass.cpp qrc_daemon.cpp \
-		moc_mainclass.cpp
+		moc_classes.cpp
 OBJECTS       = main.o \
 		mainclass.o \
 		qrc_daemon.o \
-		moc_mainclass.o
+		moc_classes.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -116,7 +116,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		../ipfs-blog-daemon/ipfs-blog-daemon.pro ../ipfs-blog-daemon/mainclass.h ../ipfs-blog-daemon/main.cpp \
+		../ipfs-blog-daemon/ipfs-blog-daemon.pro ../ipfs-blog-daemon/classes.h ../ipfs-blog-daemon/main.cpp \
 		../ipfs-blog-daemon/mainclass.cpp
 QMAKE_TARGET  = ipfs-blog-daemon
 DESTDIR       = 
@@ -277,7 +277,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../ipfs-blog-daemon/daemon.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../ipfs-blog-daemon/mainclass.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../ipfs-blog-daemon/classes.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../ipfs-blog-daemon/main.cpp ../ipfs-blog-daemon/mainclass.cpp $(DISTDIR)/
 
 
@@ -312,12 +312,12 @@ qrc_daemon.cpp: ../ipfs-blog-daemon/daemon.qrc \
 		../ipfs-blog-daemon/images/trash.png
 	/usr/lib/x86_64-linux-gnu/qt5/bin/rcc -name daemon ../ipfs-blog-daemon/daemon.qrc -o qrc_daemon.cpp
 
-compiler_moc_header_make_all: moc_mainclass.cpp
+compiler_moc_header_make_all: moc_classes.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainclass.cpp
-moc_mainclass.cpp: ../ipfs-blog-daemon/mainclass.h \
+	-$(DEL_FILE) moc_classes.cpp
+moc_classes.cpp: ../ipfs-blog-daemon/classes.h \
 		/usr/lib/x86_64-linux-gnu/qt5/bin/moc
-	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/user/Blog/ipfs-blog-daemon/qt/ipfs-blog-daemon -I/home/user/Blog/ipfs-blog-daemon/qt/ipfs-blog-daemon/tmp/moc/release_shared -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../ipfs-blog-daemon/mainclass.h -o moc_mainclass.cpp
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/user/Blog/ipfs-blog-daemon/qt/ipfs-blog-daemon -I/home/user/Blog/ipfs-blog-daemon/qt/ipfs-blog-daemon/tmp/moc/release_shared -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../ipfs-blog-daemon/classes.h -o moc_classes.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -333,17 +333,18 @@ compiler_clean: compiler_rcc_clean compiler_moc_header_clean
 
 ####### Compile
 
-main.o: ../ipfs-blog-daemon/main.cpp ../ipfs-blog-daemon/mainclass.h
+main.o: ../ipfs-blog-daemon/main.cpp ../ipfs-blog-daemon/classes.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../ipfs-blog-daemon/main.cpp
 
-mainclass.o: ../ipfs-blog-daemon/mainclass.cpp ../ipfs-blog-daemon/mainclass.h
+mainclass.o: ../ipfs-blog-daemon/mainclass.cpp ../ipfs-blog-daemon/classes.h \
+		../ipfs-blog-daemon/worker.cpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainclass.o ../ipfs-blog-daemon/mainclass.cpp
 
 qrc_daemon.o: qrc_daemon.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_daemon.o qrc_daemon.cpp
 
-moc_mainclass.o: moc_mainclass.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainclass.o moc_mainclass.cpp
+moc_classes.o: moc_classes.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_classes.o moc_classes.cpp
 
 ####### Install
 

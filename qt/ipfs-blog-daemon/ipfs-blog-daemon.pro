@@ -1,6 +1,8 @@
-HEADERS  += mainclass.h
+HEADERS  += \
+    classes.h
 SOURCES += main.cpp\
-        mainclass.cpp
+        mainclass.cpp \
+    worker.cpp
 
 RESOURCES     += daemon.qrc
 

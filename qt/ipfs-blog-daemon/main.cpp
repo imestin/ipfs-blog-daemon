@@ -3,7 +3,7 @@
 #ifndef QT_NO_SYSTEMTRAYICON
 
 #include <QMessageBox>
-#include "mainclass.h"
+#include "classes.h"
 
 int main(int argc, char *argv[]) {
     Q_INIT_RESOURCE(daemon);
