@@ -38,9 +38,9 @@ QByteArray Worker::ipfsPin(QString which) {
     QProcess *process = new QProcess();
     QByteArray respond;
     // These will be dynamic in the future
-    QString siteIPNS = "/ipns/k2k4r8klkhk0uh1b3lytws5o724z2a7qiyto4jroedt8yh4huib1mhij";
-    QString articlesIPNS = "/ipns/k2k4r8p4uati7s6c981u67ifm7wug2po2rs8a9jlce30l1mgudzzfcz8";
-    QString dbIPNS = "/ipns/k2k4r8mqe0akz71ijxrmkvhnmf9da1l5uiuuv854jwundi19kqirh4e4";
+    QString siteIPNS = "/ipns/k2k4r8nsj5rscg5xkkelcjhgtapmm6s8xvz9biragt9ejfchca3qcy4f";
+    QString articlesIPNS = "/ipns/k2k4r8kcttrnjw0hexlzvq79cv62ua8mde0cjly9kdskg2l8scocozxq";
+    QString dbIPNS = "/ipns/k2k4r8jrbu4auj6sbbutyjyqoxex6py74wyzgfy08gf0mlti3b914kee";
 
     if (which == "site") flags.append(siteIPNS);
     if (which == "articles") flags.append(articlesIPNS);
